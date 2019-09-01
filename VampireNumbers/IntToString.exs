@@ -1,5 +1,11 @@
 defmodule IsVampire do
 
+  def parallelExec(collection) do
+    collection
+    |> Enum.map(&(Task.async(fn -> getFangs(&1) end)))
+    |> Enum.map(&Task.await/1)
+  end
+
   def isNumberDigitsEven(n) do
     Integer.mod(String.length(Integer.to_string(n)), 2) == 0
   end
@@ -17,8 +23,10 @@ defmodule IsVampire do
   end
 
   def getFangs(n_str) do
-    Enum.filter(getSplitStrings(n_str),
-    fn(x) -> (String.to_integer(elem(x, 0)) * String.to_integer(elem(x,1)) == String.to_integer(n_str))
-     end)
+    if :isNumberDigitsEven do
+      Enum.filter(getSplitStrings(Integer.to_string(n_str)),
+                  fn(x) -> (String.to_integer(elem(x, 0)) * String.to_integer(elem(x,1)) == n_str) end)
+    else
+    end
   end
 end
