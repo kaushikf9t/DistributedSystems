@@ -4,6 +4,8 @@ defmodule Mix.Tasks.PerfectSquareComputer do                                  #C
 
  def start_link() do
   GenServer.start_link(__MODULE__, [])
+  # GenServer.start_link(__MODULE__, [], [debug: [:trace]])
+  # GenServer.start_link(__MODULE__, [], name: __MODULE__)
  end
 
  def init(each_num) do
@@ -14,11 +16,25 @@ defmodule Mix.Tasks.PerfectSquareComputer do                                  #C
     {:reply, state, state}
   end
 
+  def handle_cast({:simple, each_n}, state) do
+    # IO.inspect (each_n*each_n)
+    {:noreply, [each_n*each_n | state]}
+    # {:noreply, state}
+  end
+
  def handle_cast({:ass, each_n}, state) do              #Using mathematical equation
-  {:noreply, [getFangs(each_n) | state]}
+    # Logger.info "Working on #{each_n}"
+
+    res = getFangs(each_n)
+    if not is_nil(res) do
+      IO.puts "#{each_n}"
+      {:noreply, [res | state]}
+   else 
+    {:noreply, state}
+  end
  end
 
-def isNumberDigitsEven(n) do
+  def isNumberDigitsEven(n) do
     Integer.mod(String.length(Integer.to_string(n)), 2) == 0
   end
 
@@ -38,7 +54,6 @@ def isNumberDigitsEven(n) do
     if isNumberDigitsEven(n_str) do
       Enum.filter(getSplitStrings(Integer.to_string(n_str)),
                   fn(x) -> (String.to_integer(elem(x, 0)) * String.to_integer(elem(x,1)) == n_str) end)
-    else
     end
   end
 
