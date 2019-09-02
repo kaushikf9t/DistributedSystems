@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.PerfectSquareComputer do                                  #Core logic computer module
   require Logger
   use GenServer
- 
+
  def start_link() do
   GenServer.start_link(__MODULE__, [])
  end
@@ -13,7 +13,7 @@ defmodule Mix.Tasks.PerfectSquareComputer do                                  #C
   def handle_call({:ash}, _from, state) do
     {:reply, state, state}
   end
- 
+
  def handle_cast({:ass, each_n}, state) do              #Using mathematical equation
   {:noreply, [getFangs(each_n) | state]}
  end
@@ -35,7 +35,7 @@ def isNumberDigitsEven(n) do
   end
 
   def getFangs(n_str) do
-    if :isNumberDigitsEven do
+    if isNumberDigitsEven(n_str) do
       Enum.filter(getSplitStrings(Integer.to_string(n_str)),
                   fn(x) -> (String.to_integer(elem(x, 0)) * String.to_integer(elem(x,1)) == n_str) end)
     else
@@ -43,4 +43,3 @@ def isNumberDigitsEven(n) do
   end
 
 end
-
