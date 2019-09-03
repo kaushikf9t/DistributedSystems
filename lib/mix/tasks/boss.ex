@@ -46,9 +46,9 @@ require Logger
     case vampire_factors(n) do
         [] -> nil
         vf -> 
-          list = Enum.map(vf, fn x-> Tuple.to_list(x)end)
-          list = List.flatten(list)
-          list = Enum.map(list, fn x-> Integer.to_string(x)end)
+          list = Enum.map(vf, fn x-> Tuple.to_list(x) end)
+          #list = List.flatten(list)
+          list = Enum.map(List.flatten(list), fn x-> Integer.to_string(x)end)
           list = Enum.join(list, " ")
           IO.puts "#{n} #{list}"
           #{:os.system_time(:millisecond)}
@@ -60,21 +60,21 @@ require Logger
   # end
 
   def factor_pairs(n) do
-    first = trunc(n / :math.pow(10, div(char_len(n), 2)))
+    first = trunc(n / :math.pow(10, Kernel.trunc(char_len(n)/ 2)))
     last  = :math.sqrt(n) |> round
-    for i <- first .. last, rem(n, i) == 0, do: {i, div(n, i)}
+    for i <- first .. last, rem(n, i) == 0, do: {i, Kernel.trunc(n/i)}
   end
  
   def vampire_factors(n) do
-    if rem(char_len(n), 2) == 1 do
+    if !isNumberDigitsEven(n) do
       []
     else
-      half = div(length(to_charlist(n)), 2)
-      sorted = Enum.sort(String.codepoints("#{n}"))
+      half = Kernel.trunc(length(to_charlist(n))/ 2)
+      strV = Enum.sort(String.codepoints("#{n}"))
       Enum.filter(factor_pairs(n), fn {a, b} ->
         char_len(a) == half && char_len(b) == half &&
-        Enum.count([a, b], fn x -> rem(x, 10) == 0 end) != 2 &&
-        Enum.sort(String.codepoints("#{a}#{b}")) == sorted
+        Enum.count([a, b], fn x -> Integer.mod(x, 10) == 0 end) != 2 &&
+        Enum.sort(String.codepoints("#{a}#{b}")) == strV
       end)
     end
   end
