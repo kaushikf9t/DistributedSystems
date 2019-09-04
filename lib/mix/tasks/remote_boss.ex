@@ -2,7 +2,7 @@ defmodule Mix.Tasks.RemoteBoss do
 
   def start_link(start_n, end_n, _arg_k) do
     start_n..end_n 
-    |> Task.async_stream(&Mix.Tasks.Boss.vamp_check/1, max_concurrency: System.schedulers_online) 
+    |> Task.async_stream(&Mix.Tasks.RemoteBoss.vamp_check/1, max_concurrency: System.schedulers_online, timeout: 10000, on_timeout: :kill_task) 
     |> Enum.map(fn {:ok, _result} -> nil end)
   end
 

@@ -16,6 +16,7 @@ defmodule Mix.Tasks.Distributed.Runner do
     	if arg_n < 0 || arg_k < 0 do                    #Check if arguments are positive
     		IO.puts "Please provide positive numbers as arguments"
     	else
+        IO.puts "Calling distrunner"
     		Mix.Tasks.Distributed.Boss.start_link(arg_n, arg_k)     #Call the BOSS module
     	end
     else

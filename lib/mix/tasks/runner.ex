@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Runner do                            #Trigger module, called
     	if arg_n < 0 || arg_k < 0 do                      #Check if arguements are positive
     		IO.puts "Please provide positive numbers as arguments"
     	else
-    		Mix.Tasks.Boss.start_link(arg_n, arg_k)         #Call the BOSS module
+    		Mix.Tasks.Boss.start_link(arg_n, arg_k)         #Call the BOSS module        
     	end
     else
     	IO.puts "Please enter two arguments"

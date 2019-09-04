@@ -36,7 +36,7 @@ require Logger
     |> Task.async_stream(&Mix.Tasks.Boss.vamp_check/1, max_concurrency: System.schedulers_online) 
     |> Enum.map(fn {:ok, _result} -> nil end)
 
-
+    # IO.puts ""
     # (1..arg_n)
     # |> Enum.map(fn(each_n) -> spawn(__MODULE__, :work, [pid, each_n, arg_k]) end)    #spawn multiple process running in parallel
   end

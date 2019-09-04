@@ -4,9 +4,10 @@ defmodule Mix.Tasks.Distributed.Boss do
 
     #Format of the remote machine to be connected :"alias-remote-machine@ip-address"
     #example: remote_machines = [:"spideman@10.136.49.119", :"superman@10.136.29.44"]
-    remote_machines = [:"one@DESKTOP-3EL3MRT"]
+    
+    remote_machines = [:"one@192.168.0.76"]
 	  
-    Node.start :"sukhmeet@LAPTOP-SND429T2"
+    Node.start :"sukhmeet@192.168.0.208"
 	  Node.set_cookie :choco_chip
     
     no_machines = length(remote_machines) + 1
@@ -18,18 +19,20 @@ defmodule Mix.Tasks.Distributed.Boss do
    |>Enum.with_index
    |>Enum.each(fn({machine, index}) ->
       Node.connect machine
-      start_n = (index * interval) + 1
-      end_n = (index + 1) * interval
+      start_n = arg_n + (index * interval) 
+      end_n = start_n + (index + 1) * interval
       distriuted_work(machine, start_n, end_n, arg_k)
       
    end)
 	  
-	  start_of_local = ((no_machines - 1) * interval) + 1
+	  start_of_local = arg_k - ((no_machines - 1) * interval) + 1
+
+
 	  # (start_of_local..arg_n)
    #   |> Enum.map(fn(each_n) -> spawn(__MODULE__, :work, [pid, each_n, arg_k]) end)
 
      start_of_local..arg_k 
-    |> Task.async_stream(&Mix.Tasks.Boss.vamp_check/1, max_concurrency: System.schedulers_online) 
+    |> Task.async_stream(&Mix.Tasks.Distributed.Boss.vamp_check/1, max_concurrency: System.schedulers_online) 
     |> Enum.map(fn {:ok, _result} -> nil end)
 
   end
@@ -40,6 +43,7 @@ defmodule Mix.Tasks.Distributed.Boss do
 
   def distriuted_work(remote_machine, remote_start_n, remote_end_n, arg_k) do
     #IO.puts "#{remote_machine} #{remote_start_n} #{remote_end_n}"
+    IO.puts "Sending range to #{remote_machine} from #{remote_start_n} to #{remote_end_n}"
     Node.spawn_link(remote_machine, Mix.Tasks.RemoteBoss, :start_link, [remote_start_n, remote_end_n, arg_k])
   end
 
@@ -52,7 +56,7 @@ defmodule Mix.Tasks.Distributed.Boss do
           list = List.flatten(list)
           list = Enum.map(list, fn x-> Integer.to_string(x)end)
           list = Enum.join(list, " ")
-          IO.puts "#{n} #{list}"
+          IO.puts "#{n} #{list} loc"
           #{:os.system_time(:millisecond)}
       end
   end
