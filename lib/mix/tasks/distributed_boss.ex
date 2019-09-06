@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Distributed.Boss do
     
     interval = Kernel.trunc((arg_k-arg_n)/no_machines)
     
-    
+    pid = 0
    remote_machines
    |>Enum.with_index
    |>Enum.each(fn({machine, index}) ->
@@ -22,11 +22,10 @@ defmodule Mix.Tasks.Distributed.Boss do
       start_n = arg_n + (index * interval) 
       end_n = start_n + (index + 1) * interval
       distriuted_work(machine, start_n, end_n, arg_k)
-      
    end)
 	  
 	  start_of_local = arg_k - ((no_machines - 1) * interval) + 1
-
+    
 
 	  # (start_of_local..arg_n)
    #   |> Enum.map(fn(each_n) -> spawn(__MODULE__, :work, [pid, each_n, arg_k]) end)
@@ -34,7 +33,7 @@ defmodule Mix.Tasks.Distributed.Boss do
      start_of_local..arg_k 
     |> Task.async_stream(&Mix.Tasks.Distributed.Boss.vamp_check/1, max_concurrency: System.schedulers_online) 
     |> Enum.map(fn {:ok, _result} -> nil end)
-
+    
   end
 
   # def work(pid, each_n, arg_k) do
