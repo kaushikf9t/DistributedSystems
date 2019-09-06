@@ -21,8 +21,8 @@ defmodule Sequence.Server do
     GenServer.start_link(__MODULE__, [start_n | end_n], name: __MODULE__)
   end
 
-  def get_vamp do
-    GenServer.call(__MODULE__, :vamper)
+  def get_vamp(start_n, end_n) do
+    GenServer.call(__MODULE__, {:vamper, start_n, end_n})
   end
 
   # def increment_number(delta) do
@@ -32,8 +32,9 @@ defmodule Sequence.Server do
   #####
   # GenServer implementation
 
-  def handle_call(:vamper, _from, state) do
-    get_vamp(start_n, end_n)
+  def handle_call({:vamper, start_n, end_n}, _from, state) do
+    # [head | tail] = state
+    prn_vamps(start_n, end_n)
     {:reply, state, state}
   end
 
@@ -45,7 +46,7 @@ defmodule Sequence.Server do
   #   [data: [{'State', "My current state is '#{inspect(state)}', and I'm happy"}]]
   # end
 
-  def get_vamp(arg_n, arg_k) do
+  def prn_vamps(arg_n, arg_k) do
     # {:ok, pid} = Mix.Tasks.PerfectSquareComputer.start_link() 
     # IO.puts "N=#{arg_n} K=#{arg_k}"                       #Start core logic module
     # Logger.info "Just before spawning"
