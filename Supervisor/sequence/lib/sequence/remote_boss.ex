@@ -1,6 +1,6 @@
 defmodule Mix.Tasks.RemoteBoss do
   def start_link(start_n, end_n) do
-    arg_n..arg_k
+    start_n..end_n
     |> Enum.map(fn each_n ->
       _pid = spawn(__MODULE__, :vamp_check, [each_n])
       # Process.monitor(pid)
