@@ -18,6 +18,7 @@ defmodule Sequence.Server do
 
   def start_link(start_n, end_n) do
     # get_vamp(start_n, end_n)
+    prn_vamps(start_n, end_n)
     GenServer.start_link(__MODULE__, [start_n | end_n], name: __MODULE__)
   end
 
