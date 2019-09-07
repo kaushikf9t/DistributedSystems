@@ -42,17 +42,31 @@ defmodule CallExt.Server do
   def call_remote(list) do
     IO.puts("#########################################")
     IO.inspect(list)
-    {:ok, pid} = Node.start(:"sukhmeet@10.136.165.92")
+    {:ok, pid} = Node.start(:"sukhmeet@10.192.154.64")
     IO.puts("Node started: #{inspect(pid)}")
     setkya = Node.set_cookie(:choco_chip)
     IO.puts("Set kya: #{inspect(setkya)}")
 
     Enum.each(list, fn mtuple ->
-      Node.spawn_link(elem(mtuple, 0), Mix.Tasks.RemoteBoss, :start_link, [
+      IO.puts("machine: #{inspect(elem(mtuple, 0))}")
+      conkya = Node.connect(elem(mtuple, 0))
+      IO.puts("Connected to #{inspect(conkya)}")
+
+      spawn_task(Mix.Tasks.RemoteBoss, :start_link, elem(mtuple, 0), [
         elem(mtuple, 1),
-        elem(mtuple, 2)
+        elem(mtuple, 2),
+        self()
       ])
+
+      # Node.spawn_link(elem(mtuple, 0), Mix.Tasks.RemoteBoss, :start_link, [
+      #   elem(mtuple, 1),
+      #   elem(mtuple, 2)
+      # ])
     end)
+  end
+
+  def receive_message(message) do
+    IO.puts(message)
   end
 
   def prn_vamps(arg_n, arg_k) do

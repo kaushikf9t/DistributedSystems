@@ -96,7 +96,7 @@ defmodule Sequence.Server do
         list = List.flatten(list)
         list = Enum.map(list, fn x -> Integer.to_string(x) end)
         list = Enum.join(list, " ")
-        IO.puts("#{n} #{list}")
+        IO.puts("#{n} #{list}  <<<<")
         # {:os.system_time(:millisecond)}
     end
   end

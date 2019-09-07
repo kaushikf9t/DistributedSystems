@@ -54,7 +54,7 @@ defmodule Sequence.Application do
     IO.puts(">>>>>>>>>>>>>>>>>>")
     IO.inspect(ranges)
 
-    children = [worker(CallExt.Server, ranges) | children]
+    children = [worker(CallExt.Server, [ranges]) | children]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -1,8 +1,8 @@
 defmodule Mix.Tasks.RemoteBoss do
-  def start_link(start_n, end_n) do
+  def start_link(start_n, end_n, from) do
     start_n..end_n
     |> Enum.map(fn each_n ->
-      _pid = spawn(__MODULE__, :vamp_check, [each_n])
+      _pid = spawn(__MODULE__, :vamp_check, [each_n, from])
       # Process.monitor(pid)
       # receive do
       #   msg -> msg
@@ -14,7 +14,11 @@ defmodule Mix.Tasks.RemoteBoss do
     # |> Enum.map(fn {:ok, _result} -> nil end)
   end
 
-  def vamp_check(n) do
+  def send_message(recipient, message) do
+    spawn_task(CallExt.Server, :receive_message, recipient, [message])
+  end
+
+  def vamp_check(n, fr) do
     # IO.puts "Working on #{n} in vamp_check"
     case vampire_factors(n) do
       [] ->
@@ -25,7 +29,8 @@ defmodule Mix.Tasks.RemoteBoss do
         list = List.flatten(list)
         list = Enum.map(list, fn x -> Integer.to_string(x) end)
         list = Enum.join(list, " ")
-        IO.puts("#{n} #{list}")
+        # IO.puts("#{n} #{list}")
+        send_message(fr, "#{n} #{list}")
         # {:os.system_time(:millisecond)}
     end
   end
