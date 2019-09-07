@@ -14,9 +14,14 @@ defmodule Sequence.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      Application.start(Proj1),
       extra_applications: [:logger],
-      mod: {Sequence.Application, [1]}
+      mod: {Proj1, [1]}
     ]
+  end
+
+  def escript do
+    [main_module: Proj1]
   end
 
   # Run "mix help deps" to learn about dependencies.

@@ -6,7 +6,7 @@
 # We make no guarantees that this code is fit for any purpose. 
 # Visit http://www.pragmaticprogrammer.com/titles/elixir for more book information.
 # ---
-defmodule Sequence.Server do
+defmodule Local.Server do
   use GenServer
 
   def init(init_arg) do
@@ -109,7 +109,7 @@ defmodule Sequence.Server do
     if Integer.mod(char_len(n), 2) == 1 do
       []
     else
-      fangLength = Kernel.trunc(length(to_charlist(n))/2)
+      fangLength = Kernel.trunc(length(to_charlist(n)) / 2)
       sorted = Enum.sort(String.codepoints("#{n}"))
 
       Enum.filter(vampireFangs(n), fn {fang1, fang2} ->
@@ -121,9 +121,9 @@ defmodule Sequence.Server do
   end
 
   def vampireFangs(n) do
-    first = Kernel.trunc(n / :math.pow(10, Kernel.trunc(char_len(n)/2)))
+    first = Kernel.trunc(n / :math.pow(10, Kernel.trunc(char_len(n) / 2)))
     last = :math.sqrt(n) |> round
-    for i <- first..last, Integer.mod(n, i) == 0, do: {i, Kernel.trunc(n/i)}
+    for i <- first..last, Integer.mod(n, i) == 0, do: {i, Kernel.trunc(n / i)}
   end
 
   defp char_len(n), do: length(to_charlist(n))
@@ -131,5 +131,4 @@ defmodule Sequence.Server do
   def isNumberDigitsEven(n) do
     Integer.mod(String.length(Integer.to_string(n)), 2) == 0
   end
-
 end
