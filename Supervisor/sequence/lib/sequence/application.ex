@@ -10,15 +10,15 @@ defmodule Sequence.Application do
     # range = 1..System.schedulers_online()
     passed_args = System.argv()
     {_, params, _} = OptionParser.parse(passed_args, strict: [debug: :boolean])
-    no_args = length(params)
-    IO.puts("no of args : #{no_args}")
+    # no_args = length(params)
+    # IO.puts("no of args : #{no_args}")
     # Check if only 2 arguments are passed
     # if no_args === 2 do
     [argval1 | rest] = params
     [argval2 | []] = rest
     {arg_n, ""} = Integer.parse(argval1)
     {arg_k, ""} = Integer.parse(argval2)
-    #IO.puts("#{arg_n} and #{arg_k} <<<<")
+    # IO.puts("#{arg_n} and #{arg_k} <<<<")
     # end
 
     remote_machines = []
@@ -29,11 +29,13 @@ defmodule Sequence.Application do
     no_machines = length(remote_machines) + 1
 
     interval = Kernel.trunc((arg_k - arg_n) / no_machines)
-    start_of_local = arg_n
-    if Enum.count(remote_machines) > 0 do
-      start_of_local = arg_n + (no_machines - 1) * interval + 1
 
-    end
+    start_of_local =
+      if Enum.count(remote_machines) > 0 do
+        arg_n + (no_machines - 1) * interval + 1
+      else
+        arg_n
+      end
 
     children = [
       # Starts a worker by calling: Sequence.Worker.start_link(arg)
