@@ -18,6 +18,17 @@ defmodule Mix.Tasks.RemoteBoss do
     spawn_task(CallExt.Server, :receive_message, recipient, [message])
   end
 
+  def spawn_task(module, fun, recipient, args) do
+    recipient
+    |> remote_supervisor()
+    |> Task.Supervisor.async(module, fun, args)
+    |> Task.await()
+  end
+
+  defp remote_supervisor(recipient) do
+    {Vamp.TaskSupervisor, recipient}
+  end
+
   def vamp_check(n, fr) do
     # IO.puts "Working on #{n} in vamp_check"
     case vampire_factors(n) do

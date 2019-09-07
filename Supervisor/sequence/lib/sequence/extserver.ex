@@ -42,7 +42,7 @@ defmodule CallExt.Server do
   def call_remote(list) do
     IO.puts("#########################################")
     IO.inspect(list)
-    {:ok, pid} = Node.start(:"sukhmeet@10.192.154.64")
+    {:ok, pid} = Node.start(:"sukhmeet@192.168.0.208")
     IO.puts("Node started: #{inspect(pid)}")
     setkya = Node.set_cookie(:choco_chip)
     IO.puts("Set kya: #{inspect(setkya)}")
@@ -63,6 +63,17 @@ defmodule CallExt.Server do
       #   elem(mtuple, 2)
       # ])
     end)
+  end
+
+  def spawn_task(module, fun, recipient, args) do
+    recipient
+    |> remote_supervisor()
+    |> Task.Supervisor.async(module, fun, args)
+    |> Task.await()
+  end
+
+  defp remote_supervisor(recipient) do
+    {Vamp.TaskSupervisor, recipient}
   end
 
   def receive_message(message) do

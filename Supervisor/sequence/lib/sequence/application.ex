@@ -21,7 +21,7 @@ defmodule Sequence.Application do
     IO.puts("#{arg_n} and #{arg_k} <<<<")
     # end
 
-    remote_machines = [:"one@10.192.234.69"]
+    remote_machines = [:"one@192.168.0.76"]
     # remote_machines = []
     # Node.start(:"sukhmeet@10.136.165.92")
     # Node.set_cookie(:choco_chip)
@@ -55,6 +55,7 @@ defmodule Sequence.Application do
     IO.inspect(ranges)
 
     children = [worker(CallExt.Server, [ranges]) | children]
+    children = [{Task.Supervisor, name: Vamp.TaskSupervisor} | children]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
