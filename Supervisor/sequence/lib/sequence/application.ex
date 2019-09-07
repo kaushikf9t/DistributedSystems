@@ -55,7 +55,7 @@ defmodule Sequence.Application do
     IO.inspect(ranges)
 
     children = [worker(CallExt.Server, [ranges]) | children]
-    children = [{Task.Supervisor, name: Vamp.TaskSupervisor} | children]
+    # children = [{Task.Supervisor, name: Vamp.TaskSupervisor} | children]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

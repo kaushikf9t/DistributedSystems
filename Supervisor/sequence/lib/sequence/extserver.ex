@@ -52,16 +52,16 @@ defmodule CallExt.Server do
       conkya = Node.connect(elem(mtuple, 0))
       IO.puts("Connected to #{inspect(conkya)}")
 
-      spawn_task(Mix.Tasks.RemoteBoss, :start_link, elem(mtuple, 0), [
-        elem(mtuple, 1),
-        elem(mtuple, 2),
-        self()
-      ])
-
-      # Node.spawn_link(elem(mtuple, 0), Mix.Tasks.RemoteBoss, :start_link, [
+      # spawn_task(Mix.Tasks.RemoteBoss, :start_link, elem(mtuple, 0), [
       #   elem(mtuple, 1),
-      #   elem(mtuple, 2)
+      #   elem(mtuple, 2),
+      #   self()
       # ])
+
+      Node.spawn_link(elem(mtuple, 0), Mix.Tasks.RemoteBoss, :start_link, [
+        elem(mtuple, 1),
+        elem(mtuple, 2)
+      ])
     end)
   end
 
