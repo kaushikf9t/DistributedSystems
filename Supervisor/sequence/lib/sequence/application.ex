@@ -21,7 +21,7 @@ defmodule Sequence.Application do
     IO.puts("#{arg_n} and #{arg_k} <<<<")
     # end
 
-    remote_machines = [:"one@192.168.0.76"]
+    remote_machines = []
     # remote_machines = []
     # Node.start(:"sukhmeet@10.136.165.92")
     # Node.set_cookie(:choco_chip)
@@ -29,8 +29,11 @@ defmodule Sequence.Application do
     no_machines = length(remote_machines) + 1
 
     interval = Kernel.trunc((arg_k - arg_n) / no_machines)
+    start_of_local = arg_n
+    if Enum.count(remote_machines) > 0 do
+      start_of_local = arg_n + (no_machines - 1) * interval + 1
 
-    start_of_local = arg_n + (no_machines - 1) * interval + 1
+    end
 
     children = [
       # Starts a worker by calling: Sequence.Worker.start_link(arg)
@@ -50,9 +53,6 @@ defmodule Sequence.Application do
         {machine, start_n, end_n}
         # distriuted_work(machine, start_n, end_n, arg_k)
       end)
-
-    IO.puts(">>>>>>>>>>>>>>>>>>")
-    IO.inspect(ranges)
 
     children = [worker(CallExt.Server, [ranges]) | children]
     # children = [{Task.Supervisor, name: Vamp.TaskSupervisor} | children]
