@@ -18,7 +18,7 @@ defmodule Sequence.Application do
     [argval2 | []] = rest
     {arg_n, ""} = Integer.parse(argval1)
     {arg_k, ""} = Integer.parse(argval2)
-    IO.puts("#{arg_n} and #{arg_k} <<<<")
+    #IO.puts("#{arg_n} and #{arg_k} <<<<")
     # end
 
     remote_machines = []

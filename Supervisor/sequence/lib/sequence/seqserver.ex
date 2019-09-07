@@ -69,7 +69,7 @@ defmodule Sequence.Server do
     # IO.inspect res
     arg_n..arg_k
     |> Enum.map(fn each_n ->
-      _pid = spawn(__MODULE__, :vamp_check, [each_n])
+      _pid = spawn(__MODULE__, :isVampire, [each_n])
       # Process.monitor(pid)
       # receive do
       #   msg -> msg
@@ -85,9 +85,9 @@ defmodule Sequence.Server do
     # |> Enum.map(fn(each_n) -> spawn(__MODULE__, :work, [pid, each_n, arg_k]) end)    #spawn multiple process running in parallel
   end
 
-  def vamp_check(n) do
+  def isVampire(n) do
     # IO.puts "Working on #{n} in vamp_check"
-    case vampire_factors(n) do
+    case getFangs(n) do
       [] ->
         nil
 
@@ -96,7 +96,7 @@ defmodule Sequence.Server do
         list = List.flatten(list)
         list = Enum.map(list, fn x -> Integer.to_string(x) end)
         list = Enum.join(list, " ")
-        IO.puts("#{n} #{list}  <<<<")
+        IO.puts("#{n} #{list}")
         # {:os.system_time(:millisecond)}
     end
   end
@@ -105,25 +105,25 @@ defmodule Sequence.Server do
   #   GenServer.call(pid, {:ash, each_n, arg_k})                              #call core logic to compute solution
   # end
 
-  def factor_pairs(n) do
-    first = trunc(n / :math.pow(10, div(char_len(n), 2)))
-    last = :math.sqrt(n) |> round
-    for i <- first..last, rem(n, i) == 0, do: {i, div(n, i)}
-  end
-
-  def vampire_factors(n) do
-    if rem(char_len(n), 2) == 1 do
+  def getFangs(n) do
+    if Integer.mod(char_len(n), 2) == 1 do
       []
     else
-      half = div(length(to_charlist(n)), 2)
+      fangLength = Kernel.trunc(length(to_charlist(n))/2)
       sorted = Enum.sort(String.codepoints("#{n}"))
 
-      Enum.filter(factor_pairs(n), fn {a, b} ->
-        char_len(a) == half && char_len(b) == half &&
-          Enum.count([a, b], fn x -> rem(x, 10) == 0 end) != 2 &&
-          Enum.sort(String.codepoints("#{a}#{b}")) == sorted
+      Enum.filter(vampireFangs(n), fn {fang1, fang2} ->
+        char_len(fang1) == fangLength && char_len(fang2) == fangLength &&
+          Enum.count([fang1, fang2], fn x -> Integer.mod(x, 10) == 0 end) != 2 &&
+          Enum.sort(String.codepoints("#{fang1}#{fang2}")) == sorted
       end)
     end
+  end
+
+  def vampireFangs(n) do
+    first = Kernel.trunc(n / :math.pow(10, Kernel.trunc(char_len(n)/2)))
+    last = :math.sqrt(n) |> round
+    for i <- first..last, Integer.mod(n, i) == 0, do: {i, Kernel.trunc(n/i)}
   end
 
   defp char_len(n), do: length(to_charlist(n))
@@ -131,4 +131,5 @@ defmodule Sequence.Server do
   def isNumberDigitsEven(n) do
     Integer.mod(String.length(Integer.to_string(n)), 2) == 0
   end
+
 end

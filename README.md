@@ -1,2 +1,0 @@
-# DistributedSystems
-Distributed Systems projects
