@@ -5,20 +5,56 @@ defmodule Local.Server do
     {:ok, init_arg}
   end
 
-  def start_link(start_n, end_n) do
+  def start_link() do
     # get_vamp(start_n, end_n)
-    prn_vamps(start_n, end_n)
-    GenServer.start_link(__MODULE__, [start_n | end_n], name: __MODULE__)
+    # prn_vamps(start_n, end_n)
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def get_vamp(start_n, end_n) do
-    GenServer.call(__MODULE__, {:vamper, start_n, end_n})
+  def set_vamp(n) do
+    GenServer.cast(__MODULE__, {:vampercast, n})
   end
 
-  def handle_call({:vamper, start_n, end_n}, _from, state) do
-    # [head | tail] = state
-    prn_vamps(start_n, end_n)
+  def get_vamp do
+    GenServer.call(__MODULE__, {:vampercall}, 220_000)
+  end
+
+  def handle_call({:vampercall}, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_cast({:vampercast, n}, state) do
+    # IO.puts("Inside handle_cast")
+
+    t =
+      case getFangs(n) do
+        [] ->
+          # {:noreply, state}
+          nil
+
+        vf ->
+          list = Enum.map(vf, fn x -> Tuple.to_list(x) end)
+          list = List.flatten(list)
+          list = Enum.map(list, fn x -> Integer.to_string(x) end)
+          list = Enum.join(list, " ")
+          # IO.puts("#{n} #{list}")
+          # {:noreply, state ++ ["#{n} #{list}"]}
+          "#{n} #{list}"
+
+          # {:os.system_time(:millisecond)}
+      end
+
+    lis =
+      if !is_nil(t) do
+        [t]
+      else
+        []
+      end
+
+    # IO.puts("$$$$$ #{inspect(tosend)}")
+
+    # {:noreply, state}
+    {:noreply, state ++ lis}
   end
 
   def prn_vamps(arg_n, arg_k) do
