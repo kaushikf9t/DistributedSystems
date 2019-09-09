@@ -93,9 +93,9 @@ defmodule Local.Server do
     end)
   end
 
-  def handle_cast({:vamp_set_state, t}, state) do
-    {:noreply, state ++ t}
-  end
+  # def handle_cast({:vamp_set_state, t}, state) do
+  #   {:noreply, state ++ t}
+  # end
 
   def isVampire(n) do
     t =
@@ -111,13 +111,6 @@ defmodule Local.Server do
           # IO.puts("#{n} #{list}")
           "#{n} #{list}"
           # {:os.system_time(:millisecond)}
-      end
-
-    lis =
-      if !is_nil(t) do
-        [t]
-      else
-        []
       end
 
     if !is_nil(t) do
