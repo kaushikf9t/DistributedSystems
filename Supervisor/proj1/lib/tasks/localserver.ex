@@ -11,16 +11,45 @@ defmodule Local.Server do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def set_vamp(n) do
-    GenServer.cast(__MODULE__, {:vampercast, n})
+  def set_vamp(s, e) do
+    # IO.inspect(:os.timestamp())
+    # IO.puts("s: #{s} e:#{e}")
+    GenServer.cast(__MODULE__, {:vampercast, s, e - 1})
   end
 
   def get_vamp do
-    GenServer.call(__MODULE__, {:vampercall}, 220_000)
+    GenServer.call(__MODULE__, {:vampercall}, :infinity)
   end
 
   def handle_call({:vampercall}, _from, state) do
+    # empT = []
     {:reply, state, state}
+  end
+
+  def handle_cast({:vampercast, s, e}, state) do
+    toadd =
+      s..e
+      |> Enum.map(fn each_n ->
+        case getFangs(each_n) do
+          [] ->
+            # {:noreply, state}
+            nil
+
+          vf ->
+            list = Enum.map(vf, fn x -> Tuple.to_list(x) end)
+            list = List.flatten(list)
+            list = Enum.map(list, fn x -> Integer.to_string(x) end)
+            list = Enum.join(list, " ")
+            # IO.puts("#{n} #{list}")
+            # {:noreply, state ++ ["#{n} #{list}"]}
+            "#{each_n} #{list}"
+
+            # {:os.system_time(:millisecond)}
+        end
+      end)
+      |> Enum.filter(fn arg -> !is_nil(arg) end)
+
+    {:noreply, state ++ toadd}
   end
 
   def handle_cast({:vampercast, n}, state) do
@@ -64,18 +93,35 @@ defmodule Local.Server do
     end)
   end
 
-  def isVampire(n) do
-    case getFangs(n) do
-      [] ->
-        nil
+  def handle_cast({:vamp_set_state, t}, state) do
+    {:noreply, state ++ t}
+  end
 
-      vf ->
-        list = Enum.map(vf, fn x -> Tuple.to_list(x) end)
-        list = List.flatten(list)
-        list = Enum.map(list, fn x -> Integer.to_string(x) end)
-        list = Enum.join(list, " ")
-        IO.puts("#{n} #{list}")
-        # {:os.system_time(:millisecond)}
+  def isVampire(n) do
+    t =
+      case getFangs(n) do
+        [] ->
+          nil
+
+        vf ->
+          list = Enum.map(vf, fn x -> Tuple.to_list(x) end)
+          list = List.flatten(list)
+          list = Enum.map(list, fn x -> Integer.to_string(x) end)
+          list = Enum.join(list, " ")
+          # IO.puts("#{n} #{list}")
+          "#{n} #{list}"
+          # {:os.system_time(:millisecond)}
+      end
+
+    lis =
+      if !is_nil(t) do
+        [t]
+      else
+        []
+      end
+
+    if !is_nil(t) do
+      GenServer.cast(__MODULE__, {:vamp_set_state, [t]})
     end
   end
 

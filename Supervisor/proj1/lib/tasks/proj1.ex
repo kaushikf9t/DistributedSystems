@@ -31,7 +31,7 @@ defmodule Proj1 do
 
     children = [
       worker(Local.Server, []),
-      worker(Boss, [])
+      worker(Boss, [start_of_local, arg_k])
     ]
 
     # pid = 0
