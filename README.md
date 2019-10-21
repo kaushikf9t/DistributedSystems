@@ -1,2 +1,2 @@
 # DistributedSystems
-Distributed Systems projects
+Distributed Systems using the Actor Model in Elixir
