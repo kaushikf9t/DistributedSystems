@@ -1,0 +1,12 @@
+{application,gossip_simulator,
+             [{applications,[kernel,stdlib,elixir,logger,libgraph]},
+              {description,"gossip_simulator"},
+              {modules,['Elixir.Algorithm.Gossip','Elixir.Algorithm.PushSum',
+                        'Elixir.RunGossip','Elixir.RunPushSum',
+                        'Elixir.Runner','Elixir.Topology.Full',
+                        'Elixir.Topology.Honeycomb','Elixir.Topology.Line',
+                        'Elixir.Topology.Random2D',
+                        'Elixir.Topology.RandomHoneycomb',
+                        'Elixir.Topology.ThreeDTorus']},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
