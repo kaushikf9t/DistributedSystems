@@ -26,7 +26,8 @@ defmodule Pastry.Network do
             last_request: 0,
             print: 1,
             main_pid: nil,
-            failed_nodes: nil
+            failed_nodes: nil,
+            max_hops: 0
 end
 
 

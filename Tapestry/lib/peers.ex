@@ -22,8 +22,7 @@ defmodule Peers do
       false->
         mid = 
           peer<>"#{inspect n}"
-          |> Pastry.hash_input
-        #Message handler, keep polling for messages    
+          |> Pastry.hash_input    
         GenServer.cast(self,{:handle_message, %Message{mid: mid, request_init: self, prev_peer: self, request_number: n}})
         Process.sleep(1000)
         GenServer.cast(self,{:start_requesting, 1})
@@ -48,6 +47,7 @@ defmodule Peers do
           #end
         case next_hop do
           nil ->
+            #Say there was no next hop, 
             #GenServer.cast(s,{:handle_message, %Message{message | received_through: :rt, forced_leaf_set: true}})  
             GenServer.cast(s,{:handle_message, %Message{message | received_through: :rt}})
             #GenServer.cast(which_leaf(mid,ls_list),{:handle_message, %Message{message | received_through: :rt, num_hops: hops+1, prev_peer: s}})
@@ -57,6 +57,9 @@ defmodule Peers do
               # case table do
                 #:ls -> GenServer.cast(next_hop,{:handle_message, %Message{message | received_through: :ls, prev_peer: s}})
                 # :rt -> 
+                #This is for the next process to handle 
+                #This is updating the message with numhops
+                #Any message should be able to tell the final number of hops 
                 GenServer.cast(next_hop,{:handle_message, %Message{message | received_through: :rt, num_hops: hops+1, prev_peer: s}})
               # end
             false -> 
@@ -75,6 +78,7 @@ defmodule Peers do
       #     true -> hops-1
       #     false -> hops
       #   end
+      #Hops, Request Number to the main Server, this is in the lifecycle of a message
       GenServer.cast(MyServer, {:trial_count, [hops,req_num]})
     #end   
     {:noreply,tables}
@@ -115,6 +119,7 @@ defmodule Peers do
             {a,_} = String.split_at(tail,1)
             case row[a] do
               nil-> which_route(mid_string,routing_table,rows-1)
+              #prefix = null, a = A, hop-to is some node starting with A
               hop_to -> [prefix,a,hop_to]
             end
         end

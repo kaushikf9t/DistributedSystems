@@ -38,7 +38,6 @@ defmodule Pastry do
     init_network (%Network{num: num, my_bin: my_bin, rows: rows, failed_nodes: failed_nodes, max_requests: max_requests})
     Process.sleep(:infinity)
 
-
   end
 
   #network is a reference to the struct %Network
@@ -77,24 +76,33 @@ defmodule Pastry do
     {:noreply, %Network{ network | sorted_peers: sp , sorted_peers_map: spm}}
   end
 
-  def handle_cast({:trial_count, [hops, request_num]}, %Network{last_request: l,num: num,max_requests: requests, trial_count: c, total_hops: h, print: print} = network) do
+  def handle_cast({:trial_count, [hops, request_num]}, %Network{last_request: l,num: num,max_requests: requests, trial_count: c, total_hops: h, print: print, max_hops: m} = network) do
     l = 
     case request_num > l do
       true -> 
         IO.puts "Requests Number: #{request_num}"
         request_num
-      false -> l
+      false -> 
+        l
     end
+
+    # case hops > m do
+    #   true ->
+    #     newHops = hops
+    #   false -> newHops = m
+    # end
+
     print =
       case print == 1 and requests == l and (c+1)/num > 0.98 do
         true -> 
           Process.sleep(1000)
-          IO.puts "---------------------------------------------\nAverage number of hops: #{inspect ((h+hops)/(c+1))} \n---------------------------------------------"
+          # IO.puts "---------------------------------------------\nAverage number of hops: #{inspect ((h+hops)/(c+1))} \n---------------------------------------------"
+          IO.puts "MAX HOPS: #{inspect(m)}"
           GenServer.cast(MyServer,{:end_everything,1})
           0
         false -> print
-      end
-    {:noreply, %Network{ network | last_request: l, print: print, trial_count: c+1, total_hops: h+hops }}
+      end  
+    {:noreply, %Network{ network | last_request: l, print: print, trial_count: c+1, total_hops: h+hops , max_hops: Kernel.max(hops, m)}}
   end
 
   def handle_cast({:update_bin, peer}, %Network{ my_bin: my_bin, rows: rows} = network) do
@@ -115,8 +123,8 @@ defmodule Pastry do
   def handle_cast({:request_tables, %Tables{ routing_table: rt, self_atom: peer} = tables},
                  %Network{ my_bin: my_bin, failed_nodes: failed_nodes, sorted_peers: sp, sorted_peers_map: spm, num: num, table_updated_peers: tup} = network) do  
     ready_rt = fill_rt_table(rt,my_bin,Map.keys(rt),peer)
-    IO.inspect peer
-    IO.inspect ready_rt
+    # IO.inspect peer
+    #IO.inspect ready_rt
     # ready_ls =
     #   case num > 16 do
     #     true -> fill_ls_table(ls, sp, spm[peer], num)
