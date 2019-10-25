@@ -40,6 +40,8 @@ defmodule Pastry do
 
   end
 
+
+
   #network is a reference to the struct %Network
   def init_network( %Network{ num: num, my_bin: my_bin, rows: rows } = network ) do
     GenServer.start_link(Pastry, %Network{ network| main_pid: self()}, name: MyServer)
@@ -48,6 +50,9 @@ defmodule Pastry do
       for x <- 1..num do
         peer = hash_input("#{inspect x}")
         GenServer.start(Peers, %Network{ network | peer: peer, row_empty_lists: row_empty_lists} , name: peer)
+        if x == num do
+          GenServer.cast(peer, {:add_dynamically, peer})
+        end
         GenServer.cast( MyServer, {:update_bin, peer})
         peer
       end
@@ -61,8 +66,14 @@ defmodule Pastry do
     #Update the server with sorted peers
     GenServer.cast(MyServer, {:update_sorted_peers, sp})
     #Good till this call, this is just maintaining a copy at the server's Process
-    for peer <- sp do
-      GenServer.cast(peer,{:start_updating, 1})
+    for {peer,ctr} <- Enum.with_index(sp) do
+      if ctr == num do
+        first = Enum.fetch(sp,0);
+        IO.puts "first oneeeeeeeee:#{inspect first}"
+        # GenServer.cast(first, {:add_dynamically, peer})
+      else
+        GenServer.cast(peer,{:start_updating, 1})
+      end
     end
   end
   
@@ -173,6 +184,7 @@ defmodule Pastry do
   # end
 
   def fill_rt_table(rt, my_bin, [r|rows], self ) do
+
     updated_row = fill_rt_table_row( my_bin,r, rt[r], String.split("0123456789ABCDEF","", trim: true),self)
     case rows do
       []->Map.replace(rt, r, updated_row)
@@ -192,7 +204,8 @@ defmodule Pastry do
       _ ->fill_rt_table_row(my_bin, r,Map.replace(row,c,peer), columns, self)
     end
   end
-
+  
+  #update_bin(peer_string,peer,rows,my_bin)
   def update_bin(peer_string,peer, sz, my_bin) do
     case sz do
       0 -> my_bin

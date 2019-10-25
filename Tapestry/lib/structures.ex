@@ -41,7 +41,7 @@ defmodule Peers.Tables do
             # ready_ls: false,
             rows: nil,
             node_active: true,
-
+            add_dynamic: false,
             request_number: 1,
             max_requests: nil,
             hops_per_request_list: []

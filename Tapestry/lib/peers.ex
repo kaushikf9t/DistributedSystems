@@ -14,6 +14,88 @@ defmodule Peers do
     {:noreply,tables}
   end
 
+  def find_root(peer) do
+    
+  end
+
+ 
+
+  def handle_cast({:inform_all, rows_in},%Tables{routing_table: rt, rows: rows, self_atom: s} = tables) do
+    IO.puts "informing:#{inspect s}"
+    {prefix, tail} = String.split_at(to_string(s),rows-1)
+    case rows-1 <0 do
+      true-> 
+        IO.puts "In NIL.........................................."
+        [nil,nil,nil,nil]
+      false->
+        case rt[prefix] do
+          nil ->
+            GenServer.cast(s,{:inform_all, rows_in-1})
+           # which_route(mid_string,rt,rows-1)
+          row -> 
+            {a,_} = String.split_at(tail,1)
+            case row[a] do
+              nil-> GenServer.cast(s,{:inform_all, rows_in-1})
+                # which_route(mid_string,rt,rows-1)
+              #prefix = null, a = A, hop-to is some node starting with A
+              hop_to -> 
+                GenServer.cast(hop_to,{:inform_all,rows})
+                # inform_all(to_string(hop_to),rt)
+                #[prefix,a,hop_to,prefix]
+            end
+        end
+    end  
+    {:noreply,tables}
+  end
+
+   def handle_cast({:add_dynamically, peer},%Tables{routing_table: rt, rows: rows, self_atom: s, self: name} = tables) do
+    [row,col,mid, pref] = which_route(to_string(name),rt,rows)
+    {table,loc,next_hop,prefix} =  {:rt,[row,col], mid, pref}
+    IO.puts "prefix:#{prefix} len:#{String.length(to_string(prefix))} rows:#{to_string(rows)} self:#{inspect name} peer:#{inspect peer}"
+    case String.length(to_string(prefix)) == rows do
+      true ->
+        #Inform All
+        GenServer.cast(s, {:inform_all, rows})
+      false ->
+          case next_hop do
+            nil ->
+              #Say there was no next hop, 
+              #GenServer.cast(s,{:handle_message, %Message{message | received_through: :rt, forced_leaf_set: true}})  
+              GenServer.cast(s,{:add_dynamically, peer})
+              #GenServer.cast(which_leaf(mid,ls_list),{:handle_message, %Message{message | received_through: :rt, num_hops: hops+1, prev_peer: s}})
+            _ ->
+              case next_hop == s or Process.whereis(next_hop) != nil do
+                true ->
+                  # case table do
+                    # :ls -> GenServer.cast(next_hop,{:handle_message, %Message{message | received_through: :ls, prev_peer: s}})
+                    # :rt -> 
+                    # This is for the next process to handle 
+                    # This is updating the message with numhops
+                    # Any message should be able to tell the final number of hops 
+                    GenServer.cast(next_hop,{:add_dynamically, peer})
+                  # end
+                false -> 
+                  next_hop = 
+                  case next_hop == s do
+                    true -> nil
+                    false -> next_hop
+                  end
+                  # GenServer.cast(s,{:remove_inactive_peer, [next_hop,loc,table] })
+                  GenServer.cast(s,{:add_dynamically, peer})
+              end
+          end
+    end
+    {:noreply,tables}
+  end
+
+  # def inform_all(mid_string,routing_table,rows) do
+      
+  # end
+
+  # def handle_cast({:get_rt, peer},) do
+    
+  # end
+
   def handle_cast({:start_requesting, _ }, 
     #%Tables{ request_number: n, self: peer,self_atom: self, max_requests: mr, routing_table: rt, leaf_set: ls} = tables)
     #Every peer initiates a message
@@ -42,8 +124,10 @@ defmodule Peers do
           # case within_leaf_set?(pos,first,last,mid) or fls do
           #   true-> {:ls,[],which_leaf(mid,ls_list)}
           #   false-> 
-          [row,col,mid] = which_route(to_string(mid),rt,rows)
-          {table,loc,next_hop} =  {:rt,[row,col], mid}
+          [row,col,mid, pref] = which_route(to_string(mid),rt,rows)
+          {table,loc,next_hop,prefix} =  {:rt,[row,col], mid, pref}
+          # IO.puts "pref:#{prefix}"
+          # IO.puts "pref:#{prefix} Len:#{String.length(prefix)}"
           #end
         case next_hop do
           nil ->
@@ -111,7 +195,7 @@ defmodule Peers do
     {prefix, tail} = String.split_at(mid_string,rows-1)
     case rows-1 <0 do
       true-> 
-        [nil,nil,nil]
+        [nil,nil,nil,nil]
       false->
         case routing_table[prefix] do
           nil -> which_route(mid_string,routing_table,rows-1)
@@ -120,7 +204,7 @@ defmodule Peers do
             case row[a] do
               nil-> which_route(mid_string,routing_table,rows-1)
               #prefix = null, a = A, hop-to is some node starting with A
-              hop_to -> [prefix,a,hop_to]
+              hop_to -> [prefix,a,hop_to,prefix]
             end
         end
     end    
