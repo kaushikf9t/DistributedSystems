@@ -5,8 +5,7 @@ defmodule Pastry.Message do
             request_init: nil,
             prev_peer: nil,
             request_number: nil,
-            received_through: :rt # :lt or :rt
-            # forced_leaf_set: false
+            received_through: :rt
 end
 
 
@@ -19,7 +18,7 @@ defmodule Pastry.Network do
             sorted_peers_map: nil,
             row_empty_lists: nil,
             peer: nil,
-            max_requests: nil,
+            max_requests: 2,
             trial_count: 0,
             total_hops: 0,
             table_updated_peers: 0,
@@ -34,14 +33,11 @@ end
 defmodule Peers.Tables do
   
   defstruct routing_table: nil,
-            # leaf_set: nil,
             self: nil,
             self_atom: nil,
             ready_rt: false,
-            # ready_ls: false,
             rows: nil,
             node_active: true,
-
             request_number: 1,
             max_requests: nil,
             hops_per_request_list: []
