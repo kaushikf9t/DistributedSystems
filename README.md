@@ -1,4 +1,4 @@
-# DistributedSystems
+# Distributed Systems
 Distributed Systems projects
 Distributed Systems – Actor Model in Elixir
 Twitter Engine: Implemented a Twitter Engine using ETS storage and the GenServer-Supervisor architecture to simulate the processes of registering and authenticating accounts, tweeting, retweeting, mentioning, tagging, querying and displaying live feeds for users. Used a Web Interface using Phoenix to display the full simulation on a web browser   
