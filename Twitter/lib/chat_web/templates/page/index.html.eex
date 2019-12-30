@@ -1,0 +1,29 @@
+<!-- The list of messages will appear here: -->
+<h3>All Tweets</h3>
+<div class = "container-fluid overflow-auto" style="list-style: none; height: 200px; padding: 20px;">
+  <ul  id='msg-list'></ul>  
+</div>
+
+<h3>Live Feed</h3>
+<div class = "container-fluid overflow-auto" style="list-style: none; height: 200px; padding: 20px;">
+  <ul  id='live-feed'></ul>  
+</div>
+
+
+<div class="row">
+  <div class="col-xs-3 p-3">
+    <h1>Subscribe</h1>
+  </div>
+  <div class="dropdown col-xs-3 p-3">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    All clients
+  </button>
+  
+    <ul class="dropdown-menu" id="projectSelectorDropdown">
+    </ul>
+    <!-- <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a> -->
+  
+</div>
+</div>
